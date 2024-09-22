@@ -130,7 +130,6 @@ func main() {
 	// ヘッダーを書き込み
 	writer.Write([]string{"Rank", "Emoji", "Count"})
 
-	fmt.Println("Emoji Usage Rankings:")
 	for i, emoji := range emojiList {
 		if i >= RankinNumber {
 			break
