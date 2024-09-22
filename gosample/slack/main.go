@@ -6,6 +6,8 @@ import (
 	"log"
 	"os"
 	"sort"
+	"strconv"
+	"time"
 
 	"github.com/cheggaaa/pb/v3"
 	"github.com/slack-go/slack"
@@ -15,6 +17,7 @@ const (
 	RankinNumber            = 30
 	ConversationTargetLimit = 200
 	fileName                = "emoji_rankings.csv"
+	targetYear              = 2024
 )
 
 func main() {
@@ -73,7 +76,17 @@ func main() {
 		}
 
 		for _, message := range history.Messages {
-			// TODO:messageの作成日時が2024年1月以降以外はスキップ
+			// slackの文字列タイムスタンプから日付に変換
+			f, err := strconv.ParseFloat(message.Timestamp, 64)
+			if err != nil {
+				log.Printf("error getting conversation history for channel %s: %v", channel.Name, err)
+				break
+			}
+			// nsecは誤差として切り捨て
+			if time.Unix(int64(f), 0).Year() < targetYear {
+				break
+			}
+
 			for _, reaction := range message.Reactions {
 				emojiUsage[reaction.Name] += reaction.Count
 			}
